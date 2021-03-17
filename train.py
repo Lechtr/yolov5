@@ -133,6 +133,7 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
                                project='YOLOv5' if opt.project == 'runs/train' else Path(opt.project).stem,
                                name=save_dir.stem,
                                entity=opt.entity,
+                               group=opt.wandb_group,
                                id=ckpt.get('wandb_id') if 'ckpt' in locals() else None)
     loggers = {'wandb': wandb}  # loggers dict
 
@@ -471,8 +472,11 @@ if __name__ == '__main__':
     parser.add_argument('--entity', default=None, help='W&B entity')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--quad', action='store_true', help='quad dataloader')
+    parser.add_argument('--quad', action='store_true', help='quad dataloader, experimental for >640 image sizes')
     parser.add_argument('--linear-lr', action='store_true', help='linear LR')
+
+    parser.add_argument('--wandb-group', type=str, default='no_group', help='grouping for wandb logging')
+
     opt = parser.parse_args()
 
     # Set DDP variables
