@@ -34,6 +34,18 @@ from utils.loss import ComputeLoss
 from utils.plots import plot_images, plot_labels, plot_results, plot_evolution
 from utils.torch_utils import ModelEMA, select_device, intersect_dicts, torch_distributed_zero_first, is_parallel
 
+
+
+
+# Joshua Friedrich
+from torch_lr_finder import LRFinder
+from ray import tune
+
+
+
+
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -240,6 +252,30 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
                 f'Using {dataloader.num_workers} dataloader workers\n'
                 f'Logging results to {save_dir}\n'
                 f'Starting training for {epochs} epochs...')
+
+
+
+
+
+
+
+    ### LR-Finder
+    ### pytorch lr-finder
+    ### https://github.com/davidtvs/pytorch-lr-finder
+    # criterion = nn.MSELoss()
+    # # optimizer = optim.Adam(model.parameters(), lr=1e-7, weight_decay=1e-2)
+    # lr_finder = LRFinder(model, optimizer, criterion, device="cuda")
+    # lr_finder.range_test(dataloader, end_lr=10, num_iter=100)
+    # lr_finder.plot()  # to inspect the loss-learning rate graph
+    # lr_finder.reset()  # to reset the model and optimizer to their initial state
+    #
+    # exit(5)
+
+
+
+
+
+
     for epoch in range(start_epoch, epochs):  # epoch ------------------------------------------------------------------
         model.train()
 
