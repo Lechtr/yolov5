@@ -414,6 +414,15 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
             if fi > best_fitness:
                 best_fitness = fi
 
+
+
+            ### Ray Tune report Metric
+            print("fitness: ")
+            print(fi)
+            tune.report(fitness=fi)
+
+
+
             # Save model
             if (not opt.nosave) or (final_epoch and not opt.evolve):  # if save
                 ckpt = {'epoch': epoch,
@@ -477,6 +486,25 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
     return results
 
 
+''' Add Raytune-Hyp-Opt functionality'''
+global_hyp = None
+global_opt = None
+global_device = None
+global_tb_writer = None
+global_wandb = None
+def train_ray_tune(config):
+    print("train_ray_tune")
+    g = np.array([x[0] for x in config.values()])  # gains 0-1
+    ng = len(meta)
+    v = np.ones(ng)
+    print("g: ", g, ", ng: ", ng, ", v: ", v)
+    for i, k in enumerate(hyp.keys()):  # plt.hist(v.ravel(), 300)
+        print("i: ", i, ", k: ", k)
+
+
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default='yolov5s.pt', help='initial weights path')
@@ -511,7 +539,8 @@ if __name__ == '__main__':
     parser.add_argument('--quad', action='store_true', help='quad dataloader, experimental for >640 image sizes')
     parser.add_argument('--linear-lr', action='store_true', help='linear LR')
 
-    parser.add_argument('--wandb-group', type=str, default='no_group', help='grouping for wandb logging')
+    parser.add_argument('--wandb-group', type=str, default='no_group', help='JF: grouping for wandb logging')
+    parser.add_argument('--raytune', action='store_true', help='JF: optimize with ray tune')
 
     opt = parser.parse_args()
 
@@ -568,7 +597,39 @@ if __name__ == '__main__':
         if opt.global_rank in [-1, 0]:
             logger.info(f'Start Tensorboard with "tensorboard --logdir {opt.project}", view at http://localhost:6006/')
             tb_writer = SummaryWriter(opt.save_dir)  # Tensorboard
-        train(hyp, opt, device, tb_writer, wandb)
+
+
+
+        ### Joshua Friedrich
+        ### Ray Tune
+        if opt.raytune:
+            print("raytune")
+            global_hyp = hyp
+            global_opt = opt
+            global_device = device
+            global_tb_writer = tb_writer
+            global_wandb = wandb
+
+            train_ray_tune({
+                "alpha": tune.grid_search([0.001, 0.01, 0.1]),
+                "beta": tune.choice([1, 2, 3])
+            })
+
+            exit(5)
+
+            analysis = tune.run(
+                train_ray_tune,
+                metric=fitness,
+                mode=max,
+                config={
+                    "alpha": tune.grid_search([0.001, 0.01, 0.1]),
+                    "beta": tune.choice([1, 2, 3])
+                },
+                fail_fast=True)
+        else:
+            train(hyp, opt, device, tb_writer, wandb)
+
+
 
     # Evolve hyperparameters (optional)
     else:
