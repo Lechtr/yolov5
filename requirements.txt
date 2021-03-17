@@ -28,3 +28,8 @@ pandas
 # extras --------------------------------------
 thop  # FLOPS computation
 pycocotools>=2.0  # COCO mAP
+
+
+# Joshua Friedrich
+torch-lr-finder
+ray[tune]
