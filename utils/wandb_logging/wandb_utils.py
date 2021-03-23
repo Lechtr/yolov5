@@ -61,6 +61,7 @@ class WandbLogger():
                                         project='YOLOv5' if opt.project == 'runs/train' else Path(opt.project).stem,
                                         name=name,
                                         job_type=job_type,
+                                        group=opt.wandb_group,
                                         id=run_id) if not wandb.run else wandb.run
             if self.job_type == 'Training':
                 if not opt.resume:
