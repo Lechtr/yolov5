@@ -44,7 +44,7 @@ def resume_and_get_id(opt):
             model_artifact_name = WANDB_ARTIFACT_PREFIX + 'run_' + run_id + '_model'
             assert wandb, 'install wandb to resume wandb runs'
             # Resume wandb-artifact:// runs here| workaround for not overwriting wandb.config
-            run = wandb.init(id=run_id, project=project, resume='allow')
+            run = wandb.init(id=run_id, project=project, resume='allow', group=opt.wandb_group,)
             opt.resume = model_artifact_name
             return run
     return None
