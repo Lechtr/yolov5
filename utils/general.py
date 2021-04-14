@@ -70,6 +70,9 @@ def check_online():
 
 
 def check_git_status():
+
+    return  # to deactivate git up to date check
+
     # Recommend 'git pull' if code is out of date
     print(colorstr('github: '), end='')
     try:
