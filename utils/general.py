@@ -9,7 +9,6 @@ import platform
 import random
 import re
 import signal
-import subprocess
 import time
 import urllib
 from itertools import repeat
